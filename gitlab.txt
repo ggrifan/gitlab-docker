@@ -13,6 +13,18 @@ docker run `
   -v $PWD/gitlab/data:/var/opt/gitlab `
   gitlab-ce:12.2.4
 
+docker run \
+  --name gitl \
+  --hostname gitl.local \
+  --restart always \
+  -p 443:443 \
+  -p 8080:80 \
+  -p 22:22 \
+  -v $PWD/gitlab/config:/etc/gitlab \
+  -v $PWD/gitlab/logs:/var/log/gitlab \
+  -v $PWD/gitlab/data:/var/opt/gitlab \
+  gitlab-ce:12.2.4
+
 
 #######################################################
 # 2
@@ -25,11 +37,33 @@ docker run -d `
   -v $PWD/gitlab-runner/docker.sock:/var/run/docker.sock `
   gitlab/gitlab-runner:v12.2.0
 
+docker run -d \
+  --name gitlr \
+  --hostname gitlr.local \
+  --restart always \
+  -v $PWD/gitlab-runner/config:/etc/gitlab-runner \
+  -v $PWD/gitlab-runner/docker.sock:/var/run/docker.sock \
+  gitlab/gitlab-runner:v12.2.0
+
 
 #######################################################
 # 3
 #######################################################
 docker exec -it gitlr bash
+
+gitlab-runner register `
+  --non-interactive `
+  --executor "docker" `
+  --docker-image "docker:19.03.6" `
+  --docker-privileged `
+  --docker-volumes /var/run/docker.sock:/var/run/docker.sock `
+  --url "" `
+  --registration-token "" `
+  --description "docker-runner" `
+  --tag-list "docker" `
+  --run-untagged="true" `
+  --locked="false" `
+  --access-level="not_protected"
 
 gitlab-runner register \
   --non-interactive \
@@ -37,8 +71,8 @@ gitlab-runner register \
   --docker-image "docker:19.03.6" \
   --docker-privileged \
   --docker-volumes /var/run/docker.sock:/var/run/docker.sock \
-  --url "http://172.17.0.2/" \
-  --registration-token "WSuxToMUqS5KKMHq6Z2L" \
+  --url "" \
+  --registration-token "" \
   --description "docker-runner" \
   --tag-list "docker" \
   --run-untagged="true" \
@@ -52,8 +86,8 @@ gitlab-runner register \
   --docker-image "docker:19.03.6-dind" \
   --docker-privileged \
   --docker-volumes /var/run/docker.sock:/var/run/docker.sock \
-  --url "http://172.17.0.2/" \
-  --registration-token "WSuxToMUqS5KKMHq6Z2L" \
+  --url "" \
+  --registration-token "" \
   --description "docker-runner" \
   --tag-list "docker" \
   --run-untagged="true" \
@@ -67,8 +101,8 @@ gitlab-runner register \
   --docker-image "docker:18.09.2" \
   --docker-privileged \
   --docker-volumes /var/run/docker.sock:/var/run/docker.sock \
-  --url "http://172.17.0.2/" \
-  --registration-token "WSuxToMUqS5KKMHq6Z2L" \
+  --url "" \
+  --registration-token "" \
   --description "docker-runner" \
   --tag-list "docker" \
   --run-untagged="true" \
@@ -83,8 +117,8 @@ gitlab-runner register \
   --docker-image "docker:18.09.2" \
   --docker-privileged \
   --docker-volumes /var/run/docker.sock:/var/run/docker.sock \
-  --url "http://172.17.0.2/" \
-  --registration-token "WSuxToMUqS5KKMHq6Z2L" \
+  --url "" \
+  --registration-token "" \
   --description "docker-runner" \
   --tag-list "docker" \
   --run-untagged="true" \
@@ -95,8 +129,8 @@ gitlab-runner register \
 gitlab-runner register \
   --non-interactive \
   --executor "shell" \
-  --url "http://172.17.0.2/" \
-  --registration-token "WSuxToMUqS5KKMHq6Z2L" \
+  --url "" \
+  --registration-token "" \
   --description "shell-runner" \
   --tag-list "shell" \
   --run-untagged="true" \
