@@ -1,0 +1,27 @@
+before_script:
+  - echo "Hello"
+
+build_master:
+  stage: build
+  only:
+    - master
+  script: echo "Build only master"
+
+test_master:
+  stage: test
+  only:
+    - master
+  script: echo "Test only master"
+
+build_merge_request:
+  stage: build
+  only:
+    - merge_requests
+  script: echo "Build only merge request"
+
+test_merge_request:
+  stage: test
+  only:
+    - merge_requests
+  script: echo "Test only merge request"
+
